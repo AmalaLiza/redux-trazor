@@ -1,6 +1,6 @@
 {
   "name": "redux-trazor",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A redux state and actions tracer.",
   "main": "index.js",
   "scripts": {
@@ -61,15 +61,5 @@
   "peerDependencies": {
     "react": "^0.14.0",
     "redux-devtools": "^3.0.0"
-  },
-  "dependencies": {
-    "immutable": "^3.7.6",
-    "lodash": "^4.3.0",
-    "react": "^0.14.7",
-    "react-json-tree": "^0.5.1",
-    "react-pure-render": "^1.0.2",
-    "react-redux": "^4.4.0",
-    "redux": "^3.3.1",
-    "redux-devtools-themes": "^1.0.0"
   }
 }
