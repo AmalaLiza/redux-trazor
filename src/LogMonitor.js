@@ -55,6 +55,28 @@ const styles = {
 
 export default class LogMonitor extends Component {
 
+    static update = reducer;
+
+    static propTypes = {
+        dispatch: PropTypes.func,
+        computedStates: PropTypes.array,
+        actionsById: PropTypes.object,
+        stagedActionIds: PropTypes.array,
+        skippedActionIds: PropTypes.array,
+        monitorState: PropTypes.shape({
+            initialScrollTop: PropTypes.number
+        }),
+
+        preserveScrollTop: PropTypes.bool,
+        select: PropTypes.func.isRequired,
+        theme: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.string
+        ]),
+        expandActionRoot: PropTypes.bool,
+        expandStateRoot: PropTypes.bool
+    };
+
     static defaultProps = {
         select: (state) => state,
         theme: 'nicinabox',
