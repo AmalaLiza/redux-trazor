@@ -8,13 +8,12 @@ import * as themes from 'redux-devtools-themes';
 import { ActionCreators } from './instrument';
 import { updateScrollTop } from './actions';
 import reducer from './reducers';
-import './debugger.scss';
 
 const { reset, rollback, commit, sweep, toggleAction } = ActionCreators;
 
 const styles = {
     container: {
-        fontFamily: 'monaco, Consolas, Lucida Console, monospace',
+        fontFamily: 'monaco, Consolas, Lucida Console, monospace, Arial',
         position: 'relative',
         overflowY: 'hidden',
         width: '100%',
@@ -22,7 +21,9 @@ const styles = {
         minWidth: 300,
         direction: 'ltr',
         display:'flex',
-        flexDirection:'column'
+        flexDirection:'column',
+        fontFamily: 'Arial',
+        fontSize: '14px'
     },
     buttonBar: {
         padding: '15px 0',
@@ -50,6 +51,63 @@ const styles = {
         minWidth: '80%',
         marginTop: '10px',
         marginBottom: '10px'
+    },
+
+    halfWidth: {
+        width: '50%',
+        display: 'inline-block'
+    },
+
+    logMonitorTabs: {
+        marginBottom:'15px'
+    },
+
+    logMonitorTabsItem: {
+        padding: '12px',
+        display: 'inline-block',
+        width: '50%',
+        color: '#fff',
+        border: '5px solid #373B41',
+        borderBottom:'none',
+        borderRight: 'none',
+        cursor: 'pointer',
+        background: '#373B41',
+        fontSize: '16px',
+        boxSizing: 'border-box'
+    },
+
+    logMonitorTabsItemActive: {
+        padding: '12px',
+        display: 'inline-block',
+        width: '50%',
+        color: '#fff',
+        border: '5px solid #373B41',
+        borderBottom:'none',
+        borderRight: 'none',
+        cursor: 'pointer',
+        background: '#373B41',
+        fontSize: '16px',
+        boxSizing: 'border-box',
+        borderBottom:'none',
+        background:'none'
+    },
+
+    logMonitorTabsContentLabel: {
+        color: '#7191B9',
+        marginRight: '15px',
+        marginLeft: '10px'
+    },
+
+    formWrapper:{
+        margin:'20px 0'
+    },
+
+    logMonitorTabsContentInput: {
+        background: '#BABEC1',
+        border: 'none',
+        padding: '4px 5px',
+        boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.53)',
+        width: '50%'
     }
 };
 
@@ -109,9 +167,9 @@ export default class LogMonitor extends Component {
         if (this.props.preserveScrollTop) {
             node.scrollTop = this.props.monitorState.initialScrollTop;
             this.interval = setInterval(
-        ::
-            this.updateScrollTop, 1000
-        )
+                ::
+                    this.updateScrollTop, 1000
+            )
             ;
         }
     }
@@ -145,7 +203,6 @@ export default class LogMonitor extends Component {
     applyTrace() {
         let trace = JSON.parse(ReactDOM.findDOMNode(this.refs.textAreaValue).value);
         this.props.dispatch(commit(Immutable.fromJS(trace.state)));
-        //importState(Immutable.fromJS(trace.state));
         for (let i = 0; i < trace.actionHistory.length; i++) {
             this.props.dispatch(ActionCreators.performAction(trace.actionHistory[i].action));
         }
@@ -234,105 +291,101 @@ export default class LogMonitor extends Component {
                 previousState = computedStates[i - 1].state;
             }
             elements.push(
-                <LogMonitorEntry key={actionId}
-                                 theme={theme}
-                                 select={select}
-                                 action={action}
-                                 actionId={actionId}
-                                 state={state}
-                                 previousState={previousState}
-                                 collapsed={skippedActionIds.indexOf(actionId) > -1}
-                                 error={error}
-                                 copyTrace={this.copyTrace}
-                                 expandActionRoot={this.props.expandActionRoot}
-                                 expandStateRoot={this.props.expandStateRoot}
-                                 onActionClick={this.handleToggleAction}/>
-            );
+            <LogMonitorEntry key={actionId}
+                    theme={theme}
+                    select={select}
+                    action={action}
+                    actionId={actionId}
+                    state={state}
+                    previousState={previousState}
+                    collapsed={skippedActionIds.indexOf(actionId) > -1}
+                    error={error}
+                    copyTrace={this.copyTrace}
+                    expandActionRoot={this.props.expandActionRoot}
+                    expandStateRoot={this.props.expandStateRoot}
+                    onActionClick={this.handleToggleAction}/>
+                );
         }
 
-        return (
-            <div style={{...styles.container, backgroundColor: theme.base00}}>
-                <div style={{...styles.buttonBar, borderColor: theme.base02}}>
-                    <div>
-                        <div className="debugger-tabs-wrapper">
-                            <ul className="debugger-tabs" style={styles.debuggerTabs}>
-                                <li className={`debugger-tabs-item ${this.state.active? 'active':''}`}
-                                    style={styles.debuggerTabsItem}
-                                    onClick={() => {this.setState({active : !this.state.active})}}
-                                >Operations</li>
-                                <li className={`debugger-tabs-item ${!this.state.active? 'active':''}`}
-                                    style={styles.debuggerTabsItem}
-                                    onClick={() => {this.setState({active : !this.state.active})}}
-                                    >Trace</li>
-                            </ul>
+        return ( <div style={{...styles.container, backgroundColor: theme.base00}}>
+            <div style={{...styles.buttonBar, borderColor: theme.base02}}>
+                <div>
+                    <div style={styles.logMonitorTabs}>
+                        <ul style={styles.logMonitorTabs}>
+                            <li style={this.state.active? styles.logMonitorTabsItemActive : styles.logMonitorTabsItem}
+                                onClick={() => {this.setState({active : !this.state.active})}}>
+                            Operations
+                            </li>
+                            <li style={!this.state.active? styles.logMonitorTabsItemActive : styles.logMonitorTabsItem}
+                                onClick={() => {this.setState({active : !this.state.active})}}>
+                            Trace
+                            </li>
+                        </ul>
 
-                            <div className="debugger-tabs-content" style={!this.state.active?{display: 'none'}:{display:'block'}}>
-                                <LogMonitorButton
-                                    theme={theme}
-                                    onClick={this.handleReset}
-                                    enabled>
-                                    Reset
-                                </LogMonitorButton>
-                                <LogMonitorButton
-                                    theme={theme}
-                                    onClick={this.handleRollback}
-                                    enabled={computedStates.length > 1}>
-                                    Revert
-                                </LogMonitorButton>
-                                <LogMonitorButton
-                                    theme={theme}
-                                    onClick={this.handleSweep}
-                                    enabled={skippedActionIds.length > 0}>
-                                    Sweep
-                                </LogMonitorButton>
-                                <LogMonitorButton
-                                    theme={theme}
-                                    onClick={this.handleCommit}
-                                    enabled={computedStates.length > 1}>
-                                    Commit
-                                </LogMonitorButton>
-                            </div>
-                            <div className="debugger-tabs-content" style={this.state.active?{display: 'none'}:{display:'block'}}>
-                                <div className="form-wrapper">
-                                    <div className="half-width">
-                                        <label className="debugger-tabs-content-label">From:</label>
-                                        <input type="text"
-                                               className="debugger-tabs-content-input"
-                                               ref="from"
-                                        />
-                                    </div>
-                                    <div className="half-width">
-                                        <label className="debugger-tabs-content-label">To:</label>
-                                        <input type="text"
-                                               className="debugger-tabs-content-input"
-                                               ref="to"
-                                        />
-                                    </div>
-                                </div>
-                                <LogMonitorButton
-                                    theme={theme}
-                                    onClick={this.copyTrace}
-                                    enabled>
-                                    CopyTrace
-                                </LogMonitorButton>
-                                <LogMonitorButton
-                                    theme={theme}
-                                    onClick={this.applyTrace}
-                                    enabled>
-                                    ApplyTrace
-                                </LogMonitorButton>
-
-                                <div style={{...styles.buttonBar, borderColor: theme.base02, padding:'8px 0 15px'}}>
-                                    <textarea ref="textAreaValue" style={{...styles.textAreaDebug}}></textarea>
-                                </div>
-                            </div>
+                <div className="debugger-tabs-content" style={!this.state.active?{display: 'none'}:{display:'block'}}>
+                    <LogMonitorButton
+                        theme={theme}
+                        onClick={this.handleReset}
+                        enabled>
+                    Reset
+                    </LogMonitorButton>
+                    <LogMonitorButton
+                        theme={theme}
+                        onClick={this.handleRollback}
+                        enabled={computedStates.length > 1}>
+                    Revert
+                    </LogMonitorButton>
+                    <LogMonitorButton
+                        theme={theme}
+                        onClick={this.handleSweep}
+                        enabled={skippedActionIds.length > 0}>
+                     Sweep
+                    </LogMonitorButton>
+                    <LogMonitorButton
+                        theme={theme}
+                        onClick={this.handleCommit}
+                        enabled={computedStates.length > 1}>
+                    Commit
+                    </LogMonitorButton>
+                </div>
+                <div className="debugger-tabs-content" style={this.state.active?{display: 'none'}:{display:'block'}}>
+                    <div  style={styles.formWrapper}>
+                        <div style={styles.halfWidth}>
+                            <label style={styles.logMonitorTabsContentLabel}>From:</label>
+                            <input type="text"
+                                    style={styles.logMonitorTabsContentInput}
+                                    ref="from"/>
+                        </div>
+                        <div style={styles.halfWidth}>
+                            <label style={styles.logMonitorTabsContentLabel}>To:</label>
+                            <input type="text"
+                                    style={styles.logMonitorTabsContentInput}
+                                    ref="to"/>
                         </div>
                     </div>
-                </div>
-                <div style={styles.elements} ref='container'>
-                    {elements}
+                    <LogMonitorButton
+                            theme={theme}
+                            onClick={this.copyTrace}
+                            enabled>
+                    CopyTrace
+                    </LogMonitorButton>
+                    <LogMonitorButton
+                            theme={theme}
+                            onClick={this.applyTrace}
+                            enabled>
+                            ApplyTrace
+                    </LogMonitorButton>
+
+                <div style={{...styles.buttonBar, borderColor: theme.base02, padding:'8px 0 15px'}}>
+                <textarea ref="textAreaValue" style={{...styles.textAreaDebug}}></textarea>
                 </div>
             </div>
-        );
+        </div>
+        </div>
+                    </div>
+        <div style={styles.elements} ref='container'>
+            {elements}
+        </div>
+    </div>);
     }
 }
