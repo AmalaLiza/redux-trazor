@@ -348,7 +348,7 @@ export default class LogMonitor extends Component {
                     Commit
                     </LogMonitorButton>
                 </div>
-                <div className="debugger-tabs-content" style={this.state.active?{display: 'none'}:{display:'block'}}>
+                <div style={this.state.active?{display: 'none'}:{display:'block'}}>
                     <div  style={styles.formWrapper}>
                         <div style={styles.halfWidth}>
                             <label style={styles.logMonitorTabsContentLabel}>From:</label>
